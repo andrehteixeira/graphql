@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { gql, useQuery } from "@apollo/client";
+import React from "react";
+import { NewUserFrom } from "./components/NewUserForm";
+
+type User = {
+  id: string;
+  name: string;
+};
+
+export const GET_USERS = gql`
+  query {
+    users {
+      id
+      name
+    }
+  }
+`;
 
 function App() {
+  const { data, loading } = useQuery<{ users: User[] }>(GET_USERS);
+
+  if (loading) return <p>Loading...</p>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        {data?.users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+      <NewUserFrom />
     </div>
   );
 }
